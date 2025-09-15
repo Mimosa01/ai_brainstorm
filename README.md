@@ -24,3 +24,73 @@ cd seekr
 
 # Установка зависимостей через pip
 pip install -e .
+````
+
+**Примечание:** Для работы необходим Python 3.11+ и доступ к локальной модели Hugging Face или интернет для загрузки модели.
+
+---
+
+## Использование
+
+### CLI команды
+
+```bash
+# Просмотр текущей роли модели
+seekr role
+
+# Установка новой роли модели
+seekr role "ассистент идей"
+
+# Сброс роли к дефолтной
+seekr role --reset
+
+# Просмотр текущей категории
+seekr category
+
+# Установка новой категории генерации
+seekr category "creative"
+
+# Сброс категории к дефолтной
+seekr category --reset
+
+# Показать список всех категорий
+seekr category --list
+
+# Создание нового дерева идей
+seekr idea "Новая идея" --depth 2 --breadth 3
+
+# Добавление дочерних идей к существующему узлу
+seekr idea --parent <NODE_ID> --depth 1 --breadth 2
+```
+
+---
+
+## Структура проекта
+
+```
+seekr/
+├── generate/         # Генерация идей, IdeaGenerator
+├── state/            # Tree и Node, StorageManager
+├── utils/            # Помощники
+├── exceptions/       # Кастомные исключения
+├── main.py           # CLI на Typer
+├── README.md
+├── setup.py
+└── constants.py      # Промпты 
+```
+
+---
+
+## Требования
+
+* Python 3.11+
+* transformers >= 4.35
+* torch >= 2.0
+* typer >= 0.9
+* python-dotenv >= 1.0
+
+---
+
+## Лицензия
+
+MIT License
