@@ -1,0 +1,1 @@
+from .idea_generate import generator, IdeaGenerator
