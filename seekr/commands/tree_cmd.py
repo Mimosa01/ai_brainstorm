@@ -15,25 +15,34 @@ def idea(
   text: Optional[str] = Argument(None, help="Текст новой идеи (требуется только для нового дерева)"),
   parent: Optional[str] = Option(None, "--parent", help="ID родительского узла для создания дочернего узла"),
   depth: int = Option(1, "-d", "--depth", help="Глубина создаваемого дерева"),
-  breadth: int = Option(3, "-b", "--breadth", help="Ширина создаваемого дерева")
+  breadth: int = Option(3, "-b", "--breadth", help="Ширина создаваемого дерева"),
 ):
   """Создание новой идеи (новое дерево или дочерний узел)."""
 
+  # --- Если указан родитель ---
   if parent:
     current_tree = tree_manager.get_current_tree()
     if not current_tree:
       echo("Нет активного дерева. Сначала создайте дерево.")
       return
-    
+
     parent_node = current_tree.find(parent)
     if not parent_node:
       echo(f"Родитель с id={parent} не найден")
       return
-    
-    echo(f"Добавляем дочерние идеи к узлу: {parent_node.text} (id={parent_node.id})")
-    generator.expand_tree(parent_node, depth, breadth)
+
+    # либо расширяем существующий узел, либо создаём новый
+    target_node = (
+      current_tree.add_node(parent_id=parent_node.id, text=f"{parent_node.text} {text}")
+      if text else parent_node
+    )
+
+    if target_node:
+      echo(f"Добавляем дочерние идеи к узлу: {target_node.text} (id={target_node.id})")
+      generator.expand_tree(target_node, depth, breadth)
     tree_manager.save_state()
 
+  # --- Если родитель не указан → создаём новое дерево ---
   else:
     if not text:
       echo("Для создания нового дерева необходимо указать текст идеи.")
@@ -45,13 +54,22 @@ def idea(
 
     generator.expand_tree(tree.root, depth, breadth)
     tree_manager.save_state()
-    
+
+  # --- Общая часть (для обоих сценариев) ---
   current_tree = tree_manager.get_current_tree()
   if current_tree:
     print_tree_human(current_tree.root)
 
   echo(f"Параметры генерации: глубина={depth}, ширина={breadth}")
 
+
+@app.command()
+def delete(id: str = Argument(None, help="Удалить дерево с выбранным id")):
+  try:
+    tree_manager.delete_tree(id)
+    echo(f'Дерево [{id}] - Успешно удалено')
+  except FileNotFoundError:
+    echo('Ошибка обработки файла')
 
 @app.command()
 def show(short: bool = Option(False, "--short", "-s", is_flag=True, help="Показывать только id дерева")):

@@ -82,6 +82,13 @@ class StorageManager:
   def list_trees(self) -> Dict[str, str]:
     """Возвращает словарь {tree_id: path}"""
     return self.load_system().get("trees", {})
+  
+  def delete_tree(self, tree_id) -> None:
+    path = os.path.join(self.trees_dir, f"{tree_id}.json")
+    if not os.path.exists(path):
+      raise FileNotFoundError(f"Tree file not found: {path}")
+    with open(path, "r", encoding="utf-8") as f:
+      os.remove(path)
 
 
 storage = StorageManager()

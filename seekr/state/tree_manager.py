@@ -51,6 +51,9 @@ class TreeManager:
       tree_data = self.storage.load_tree(tree_id)
       self.trees[tree_id] = Tree.from_dict(tree_data)
     self.current_tree = self.storage.get_current_tree()
+
+  def delete_tree(self, tree_id: str) -> None:
+    storage.delete_tree(tree_id)
   
 
 tree_manager = TreeManager(storage=storage)
